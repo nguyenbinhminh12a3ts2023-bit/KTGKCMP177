@@ -1,0 +1,10 @@
+﻿{
+    "timeSpentSeconds":  3600,
+    "studentName":  "Nguyen Van A",
+    "answers":  {
+                    "103":  "C",
+                    "101":  "B",
+                    "102":  "A"
+                },
+    "examId":  1
+}

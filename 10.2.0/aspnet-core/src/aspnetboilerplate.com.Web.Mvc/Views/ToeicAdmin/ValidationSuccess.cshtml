@@ -1,0 +1,88 @@
+@model aspnetboilerplate.com.Toeic.Dto.DocxValidationResultDto
+@{
+    ViewBag.Title = "Kiểm tra thành công";
+    Layout = "~/Views/Shared/Layout/_Layout.cshtml";
+}
+
+<style>
+    :root {
+        --primary: #087F82;
+        --primary-light: #E7F4F3;
+        --navy: #18324F;
+        --muted: #68788A;
+        --bg: #F4F7FA;
+        --border: #DCE4EC;
+        --success: #10B981;
+        --success-light: #D1FAE5;
+    }
+    .toeic-container {
+        padding: 24px 32px;
+        background-color: var(--bg);
+        min-height: calc(100vh - 120px);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .success-card {
+        background: #FFFFFF;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 32px;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    .check-circle {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background-color: var(--success-light);
+        color: var(--success);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px auto;
+    }
+</style>
+
+<div class="toeic-container">
+    <div style="font-size: 13px; color: var(--muted); margin-bottom: 8px; max-width: 800px; margin-left: auto; margin-right: auto;">
+        Đề thi Reading / <a href="@Url.Action("Index", "ToeicAdmin")" style="color: var(--muted);">Quản lý đề thi</a> / Kiểm tra thành công
+    </div>
+
+    <div class="success-card">
+        <div class="check-circle">
+            <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+        </div>
+        <h2 style="text-align: center; font-size: 24px; font-weight: 800; color: var(--navy); margin-bottom: 8px;">Đề thi hợp lệ 100%!</h2>
+        <p style="text-align: center; color: var(--muted); font-size: 14px; margin-bottom: 28px;">
+            Toàn bộ 100 câu hỏi và các đoạn văn đã vượt qua tất cả các tiêu chuẩn kiểm tra định dạng tags.
+        </p>
+
+        <div style="background-color: #F8FAFC; border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--border);">
+                <span style="color: var(--muted); font-size: 13.5px;">Tên bài thi:</span>
+                <strong style="color: var(--navy);">@Model.ExamTitle</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--border);">
+                <span style="color: var(--muted); font-size: 13.5px;">Tổng số câu hỏi:</span>
+                <strong style="color: var(--primary);">@Model.ValidQuestionsCount câu (101 – 200)</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--border);">
+                <span style="color: var(--muted); font-size: 13.5px;">Phân bổ cấu trúc:</span>
+                <span style="font-weight: 600; color: var(--navy-dark); font-size: 13px;">Part 5 (@(Model.Part5Count)c) · Part 6 (@(Model.Part6Count)c) · Part 7 (@(Model.Part7Count)c)</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                <span style="color: var(--muted); font-size: 13.5px;">Trạng thái kiểm tra:</span>
+                <span style="color: var(--success); font-weight: 700;">Hợp lệ (0 lỗi phát hiện)</span>
+            </div>
+        </div>
+
+        <form action="@Url.Action("SaveValidatedExam", "ToeicAdmin")" method="post">
+            @Html.AntiForgeryToken()
+            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                <a href="@Url.Action("Import", "ToeicAdmin")" style="padding: 10px 20px; border-radius: 8px; border: 1px solid var(--border); color: var(--muted); text-decoration: none; font-weight: 600;">Hủy</a>
+                <button type="submit" style="padding: 10px 24px; border-radius: 8px; border: none; background-color: var(--primary); color: #fff; font-weight: 700; cursor: pointer;">
+                    Lưu đề thi vào hệ thống
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

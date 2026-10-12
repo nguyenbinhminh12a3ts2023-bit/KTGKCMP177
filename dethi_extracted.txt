@@ -1,0 +1,109 @@
+PHÂN TÍCH VÀ XÂY DỰNG ỨNG DỤNG THI TOEIC 
+READING 
+I. 
+Phân tích đề thi thực tế 
+Dựa trên file PDF đề thi thực tế, dữ liệu bài thi TOEIC Reading (100 câu) được chia làm 3 
+phần có cấu trúc hoàn toàn khác nhau. Backend phải xử lý được cấu trúc phân cấp này: 
+1. Level 1: Part 5 (Câu hỏi độc lập) 
+- Cấu trúc: [Câu hỏi] Þ [4 Đáp án] Þ [Đáp án đúng]. Không có đoạn văn đi kèm. 
+ 
+2. Level 2: Part 6 & Part 7 (Câu hỏi nhóm theo đoạn văn/hình ảnh) 
+- Cấu trúc: [Nội dung bài đọc (Text/Image)] Þ [Danh sách câu hỏi phụ thuộc]. 
+- Đặc thù Part 6: Chỗ trống nằm trong bài đọc, câu hỏi chỉ là số thứ tự (VD: 131, 132). 
+- Đặc thù Part 7: Bài đọc có thể rất dài, gồm nhiều thành phần. 
+ 
+
+---PAGE---
+II. 
+Tạo nội dung đề thi 
+Từ nội dung của file đề thi TOEIC Reading (PDF) đươc cung cấp bởi giảng viên, mỗi 
+sinh viên sẽ tạo nội dung đề thi thành file WORD (định dạng .docx) và phải BẮT BUỘC phải 
+định nghĩa bộ thẻ (Tags) định dạng chuẩn để ứng dụng có thể đọc và hiểu được nội dung đề 
+thi.  
+III. 
+Phân tích và thiết kế cơ sở dữ liệu 
+Để đáp ứng được cấu trúc trên, hệ thống không thể chỉ có 1 bảng câu hỏi. Yêu cầu các 
+sinh viên phân tích yêu cầu và thiết kế cơ sở dữ liệu phù hợp để lưu trữ nội dung đề thi. 
+IV. 
+Yêu cầu các chức năng sẽ thực hiện 
+1. Giảng viên 
+a) Tạo đề thi từ file WORD 
+- Cung cấp giao diện upload file .docx 
+- Hệ thống tiến hành đọc file. Nếu phát hiện sai định dạng (ví dụ thiếu tag, thiếu đáp án, 
+sai số thứ tự câu), hệ thống phải hủy bỏ toàn bộ không lưu vào CSDL và hiển thị lỗi để 
+Giảng viên sửa file. Chỉ lưu khi file đúng 100% chuẩn. 
+b) Xem trước đề thi:  
+- Giảng viên click vào đề thi đã import, hệ thống tạo ra giao diện để rà soát lỗi chính tả, 
+rà soát hình ảnh có hiển thị có đúng. 
+2. Dành cho người học 
+c) Giao diện hiển thị danh sách đề thi 
+- Hiển thị các đề thi (tên đề, thời gian làm bài, số lượng câu hỏi). 
+d) Giao diện làm bài 
+- Quản lý thời gian thi: Đếm ngược thời gian thực (75 phút). Có cảnh báo khi sắp hết giờ 
+và tự động thu bài, khóa quyền chọn đáp án khi hết thời gian thi. 
+- Ghi nhận trạng thái làm bài: Lưu trữ tạm thời các đáp án người dùng chọn; cho phép 
+thay đổi hoặc hủy lựa chọn trước khi nộp. 
+- Xác thực và nộp bài: Kiểm tra tổng số câu chưa hoàn thành, hiển thị cảnh báo xác nhận 
+trước khi gửi dữ liệu bài làm. 
+e) Giao diện hiển thị kết quả 
+- Chấm điểm tự động: So khớp danh sách câu trả lời của thí sinh với đáp án của đề thi để 
+tính tổng số câu đúng, câu sai và câu bỏ qua. 
+
+---PAGE---
+V. 
+Yêu cầu 
+Cấu trúc dựa án sẽ gồm 2 thư mục chính, mỗi thư mục được mô tả: 
+1. Backend 
+a) Ứng dụng backend là website dành cho Admin, sẽ cho phép các chức năng import đề 
+thi và chỉnh sửa nội dung đề thi. 
+b) Sử dụng https://aspnetboilerplate.com/Templates để tạo một project ASP.NET MVC 
+c) Sử dụng cơ sở dữ liệu Microsoft SQL Server 
+d) Link tham khảo về cấu trúc Project templates và cách tạo các class theo đúng cấu trúc 
+của Project templates: 
+https://aspnetboilerplate.com/Pages/Documents/Articles/Introduction-With-AspNet-
+Core-And-Entity-Framework-Core-Part-1/index.html 
+2. Frontend 
+a) Ứng dụng frontend trên ứng dụng di động sẽ dành cho người dùng, người dùng có thể 
+chọn đề thi và thi. 
+b) Sử dụng công cụ Figma hoặc Google Stitch để tạo giao diện cho ứng dụng Mobile. 
+Sau đó phải bắt buộc hiện thực giao diện từ thiết kế đã có. 
+VI. 
+Kết quả nội dung nộp 
+1. File word đề thi TOEIC đã có định dạng (gồm các tags) 
+2. File word báo cáo theo mẫu về ứng dụng và các kết quả đã làm được. 
+3. Source code nội dung bài giữa kỳ sẽ được upload lên Github, sinh viên sẽ quay lại full 
+screen demo từng chức năng và bỏ vào thư mục videos trên github của dự án. 
+4. Link giao diện đã từ trên Figma hoặc Google Stitch. 
+VI: Tiêu chí đánh giá 
+No 
+Yêu cầu/Chức năng thực hiện 
+Điểm 
+1. 
+File WORD TOEIC  
+1 
+2. 
+Phân tích và thiết kế Cơ sở dữ liệu phù hợp với ứng dụng 
+1 
+3. 
+Chức năng Upload file, tạo đề thi từ file word 
+1 
+4. 
+Chức năng cập nhật, chỉnh sửa nội dung đề thi 
+1 
+5. 
+Chức năng hiển thị danh sách đề thi để users chọn 
+1 
+6. 
+Chức năng thi + Link thiết kế giao diện  
+3 
+7. 
+Chức năng hiển thị kết quả thi 
+1 
+8. 
+Giao diện đẹp, thân thiện người sử dụng 
+1 
+ 
+ 
+
+---PAGE---
+n The end 

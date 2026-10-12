@@ -1,0 +1,116 @@
+@model aspnetboilerplate.com.Toeic.Dto.DocxValidationResultDto
+@{
+    ViewBag.Title = "Lỗi định dạng đề thi";
+    Layout = "~/Views/Shared/Layout/_Layout.cshtml";
+}
+
+<style>
+    :root {
+        --primary: #087F82;
+        --navy: #18324F;
+        --muted: #68788A;
+        --bg: #F4F7FA;
+        --border: #DCE4EC;
+        --danger: #EF4444;
+        --danger-light: #FEE2E2;
+    }
+    .toeic-container {
+        padding: 24px 32px;
+        background-color: var(--bg);
+        min-height: calc(100vh - 120px);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .error-banner {
+        background-color: var(--danger-light);
+        border: 1px solid #FCA5A5;
+        border-radius: 12px;
+        padding: 20px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 24px;
+    }
+    .error-card {
+        background: #FFFFFF;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .error-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .error-table th {
+        background: #F8FAFC;
+        padding: 14px 20px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--muted);
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+    }
+    .error-table td {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border);
+        font-size: 13.5px;
+    }
+    .badge-error {
+        background: var(--danger-light);
+        color: var(--danger);
+        font-weight: 700;
+        font-size: 12px;
+        padding: 4px 10px;
+        border-radius: 6px;
+    }
+</style>
+
+<div class="toeic-container">
+    <div style="font-size: 13px; color: var(--muted); margin-bottom: 8px;">
+        Đề thi Reading / <a href="@Url.Action("Index", "ToeicAdmin")" style="color: var(--muted);">Quản lý đề thi</a> / Lỗi định dạng
+    </div>
+
+    <div class="error-banner">
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 44px; height: 44px; border-radius: 50%; background: #EF4444; color: #fff; display: flex; align-items: center; justify-content: center;">
+                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            </div>
+            <div>
+                <h3 style="margin: 0 0 4px 0; font-size: 18px; font-weight: 800; color: #991B1B;">Phát hiện @Model.Errors.Count lỗi cấu trúc trong tệp Word</h3>
+                <div style="font-size: 13.5px; color: #B91C1C;">Đề thi bị từ chối hoàn toàn theo quy tắc tính toàn vẹn 100%. Vui lòng chỉnh sửa và tải lại tệp.</div>
+            </div>
+        </div>
+        <a href="@Url.Action("Import", "ToeicAdmin")" style="background: #DC2626; color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; font-size: 13px;">
+            Tải lại tệp khác
+        </a>
+    </div>
+
+    <div class="error-card">
+        <div style="padding: 18px 24px; border-bottom: 1px solid var(--border); font-weight: 700; color: var(--navy); font-size: 15px;">
+            Bảng chi tiết các lỗi định dạng phát hiện
+        </div>
+        <table class="error-table">
+            <thead>
+                <tr>
+                    <th style="width: 200px;">Vị trí lỗi</th>
+                    <th style="width: 140px;">Điểm phát hiện</th>
+                    <th style="width: 200px;">Tiêu đề lỗi</th>
+                    <th>Vấn đề chi tiết</th>
+                    <th>Cách khắc phục gợi ý</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var err in Model.Errors)
+                {
+                    <tr>
+                        <td><span style="font-weight: 700; color: var(--navy);">@err.Location</span></td>
+                        <td><span style="font-size: 13px; color: var(--muted);">@err.Position</span></td>
+                        <td><span class="badge-error">@err.Title</span></td>
+                        <td style="color: #991B1B; font-weight: 500;">@err.Problem</td>
+                        <td style="color: #065F46; font-size: 13px;">@err.Fix</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

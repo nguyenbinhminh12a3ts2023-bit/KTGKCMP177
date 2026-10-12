@@ -1,0 +1,488 @@
+@model aspnetboilerplate.com.Toeic.Dto.ToeicExamDto
+@using System.Text.Json
+@{
+    ViewBag.Title = "Chỉnh sửa đề thi";
+    Layout = "~/Views/Shared/Layout/_Layout.cshtml";
+}
+
+<style>
+    :root {
+        --primary: #087F82;
+        --primary-light: #E7F4F3;
+        --navy: #18324F;
+        --navy-dark: #23364B;
+        --muted: #68788A;
+        --bg: #F4F7FA;
+        --card-bg: #FFFFFF;
+        --border: #DCE4EC;
+    }
+    .toeic-container {
+        padding: 24px 32px;
+        background-color: var(--bg);
+        min-height: calc(100vh - 120px);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .toeic-breadcrumb {
+        font-size: 13px;
+        color: var(--muted);
+        margin-bottom: 8px;
+    }
+    .toeic-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+    }
+    .toeic-title {
+        font-size: 26px;
+        font-weight: 700;
+        color: var(--navy);
+        margin: 0;
+    }
+    .toeic-subtitle {
+        font-size: 14px;
+        color: var(--muted);
+        margin-top: 4px;
+    }
+    .edit-layout {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 24px;
+    }
+    .sidebar-tree {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+        height: fit-content;
+        position: sticky;
+        top: 20px;
+    }
+    .tree-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--navy);
+        margin-bottom: 12px;
+    }
+    .tree-item {
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 13px;
+        color: var(--navy);
+        font-weight: 600;
+        cursor: pointer;
+        margin-bottom: 6px;
+        transition: 0.15s;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .tree-item:hover, .tree-item.active {
+        background-color: var(--primary-light);
+        color: var(--primary);
+    }
+    .editor-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 24px;
+    }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    .form-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--navy);
+        margin-bottom: 6px;
+        display: block;
+    }
+    .form-control-custom {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 14px;
+        color: var(--navy-dark);
+        outline: none;
+        box-sizing: border-box;
+    }
+    .form-control-custom:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(8, 127, 130, 0.1);
+    }
+    .textarea-custom {
+        min-height: 140px;
+        line-height: 1.6;
+        font-family: inherit;
+        resize: vertical;
+    }
+    .options-edit-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+    .option-edit-box {
+        background: #FAFBFD;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 12px 16px;
+    }
+    .option-edit-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+    .ans-selector {
+        display: flex;
+        gap: 12px;
+        margin-top: 8px;
+    }
+    .ans-btn {
+        width: 44px;
+        height: 44px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: #ffffff;
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--navy);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.15s;
+    }
+    .ans-btn.active {
+        background-color: var(--primary);
+        color: #ffffff;
+        border-color: var(--primary);
+    }
+    .btn-save-edit {
+        background-color: var(--primary);
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 15px;
+        padding: 12px 32px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .btn-save-edit:hover {
+        background-color: #066669;
+    }
+    .toast-msg {
+        display: none;
+        background: #1E6B52;
+        color: #ffffff;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 1000;
+    }
+</style>
+
+<div class="toeic-container">
+    <div class="toeic-breadcrumb">Đề thi Reading / <a href="@Url.Action("Index", "ToeicAdmin")" style="color: var(--muted); text-decoration: none;">@Model.Title</a> / Chỉnh sửa đề thi</div>
+
+    <div class="toeic-header">
+        <div>
+            <h1 class="toeic-title">Chỉnh sửa đề thi</h1>
+            <div class="toeic-subtitle">@Model.Title · Cập nhật nội dung câu hỏi, đoạn văn và đáp án đúng.</div>
+        </div>
+        <div style="display: flex; gap: 12px;">
+            <a href="@Url.Action("Preview", "ToeicAdmin", new { id = Model.Id })" class="btn-save-edit" style="background-color: #EDF2F7; color: var(--navy); text-decoration: none;">
+                Xem trước đề thi
+            </a>
+            <a href="@Url.Action("Index", "ToeicAdmin")" class="btn-save-edit" style="background-color: #EDF2F7; color: var(--navy); text-decoration: none;">
+                Hoàn tất
+            </a>
+        </div>
+    </div>
+
+    <!-- Flatten list of all questions -->
+    @{
+        var allQuestions = new List<aspnetboilerplate.com.Toeic.Dto.ToeicQuestionDto>();
+        var passageMap = new Dictionary<int, Tuple<int?, string, string>>(); // qNum -> (groupId, groupTitle, passageText)
+
+        foreach (var p in Model.Parts)
+        {
+            if (p.PartNumber == 5)
+            {
+                foreach (var q in p.Questions)
+                {
+                    allQuestions.Add(q);
+                    passageMap[q.QuestionNumber] = new Tuple<int?, string, string>(null, null, null);
+                }
+            }
+            else
+            {
+                foreach (var g in p.Groups)
+                {
+                    foreach (var q in g.Questions)
+                    {
+                        allQuestions.Add(q);
+                        passageMap[q.QuestionNumber] = new Tuple<int?, string, string>(g.Id, g.Title, g.PassageText);
+                    }
+                }
+            }
+        }
+        allQuestions = allQuestions.OrderBy(q => q.QuestionNumber).ToList();
+        var initialQ = allQuestions.FirstOrDefault() ?? new aspnetboilerplate.com.Toeic.Dto.ToeicQuestionDto();
+    }
+
+    <div class="edit-layout">
+        <!-- Sidebar Navigation Tree -->
+        <div class="sidebar-tree">
+            <div class="tree-title">Danh sách câu hỏi</div>
+            <div style="max-height: 550px; overflow-y: auto; padding-right: 4px;">
+                @foreach (var q in allQuestions)
+                {
+                    <div class="tree-item @(q.QuestionNumber == 101 ? "active" : "")" id="nav-q-@q.QuestionNumber" onclick="selectQuestion(@q.QuestionNumber)">
+                        <span>Câu @q.QuestionNumber</span>
+                        <span style="font-size: 11px; color: var(--muted);">Part @(q.QuestionNumber <= 130 ? "5" : (q.QuestionNumber <= 146 ? "6" : "7"))</span>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Editor Form -->
+        <div class="editor-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 20px;">
+                <h2 id="editingHeader" style="font-size: 18px; font-weight: 700; color: var(--navy); margin: 0;">
+                    Chỉnh sửa Câu 101
+                </h2>
+                <span id="partBadge" style="font-size: 12px; font-weight: 700; background: var(--primary-light); color: var(--primary); padding: 4px 12px; border-radius: 20px;">
+                    Part 5 · Incomplete Sentences
+                </span>
+            </div>
+
+            <input type="hidden" id="currentQId" value="@initialQ.Id" />
+            <input type="hidden" id="currentQNum" value="@initialQ.QuestionNumber" />
+            <input type="hidden" id="currentPassageGroupId" value="" />
+
+            <!-- Passage editor (for Part 6 and Part 7) -->
+            <div id="passageEditorSection" style="display: none; margin-bottom: 24px;">
+                <div class="form-group">
+                    <label class="form-label" id="passageTitleLabel">Tiêu đề đoạn đọc (Passage Title)</label>
+                    <input type="text" id="passageTitleInput" class="form-control-custom" readonly style="background: #F8FAFC;" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nội dung đoạn đọc dùng chung cho nhóm</label>
+                    <textarea id="passageTextInput" class="form-control-custom textarea-custom"></textarea>
+                    <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">
+                        Giữ nguyên các số chỗ trống [131], [132]... để không làm mất liên kết với câu hỏi.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question Stem -->
+            <div class="form-group">
+                <label class="form-label">Nội dung câu hỏi (Question Stem)</label>
+                <textarea id="questionTextInput" class="form-control-custom" style="min-height: 80px;"></textarea>
+            </div>
+
+            <!-- Options A, B, C, D -->
+            <div class="form-group">
+                <label class="form-label">Các lựa chọn đáp án (A, B, C, D)</label>
+                <div class="options-edit-grid">
+                    <div class="option-edit-box">
+                        <div class="option-edit-header">
+                            <strong style="color: var(--navy);">Lựa chọn A</strong>
+                        </div>
+                        <input type="text" id="optionAInput" class="form-control-custom" />
+                    </div>
+
+                    <div class="option-edit-box">
+                        <div class="option-edit-header">
+                            <strong style="color: var(--navy);">Lựa chọn B</strong>
+                        </div>
+                        <input type="text" id="optionBInput" class="form-control-custom" />
+                    </div>
+
+                    <div class="option-edit-box">
+                        <div class="option-edit-header">
+                            <strong style="color: var(--navy);">Lựa chọn C</strong>
+                        </div>
+                        <input type="text" id="optionCInput" class="form-control-custom" />
+                    </div>
+
+                    <div class="option-edit-box">
+                        <div class="option-edit-header">
+                            <strong style="color: var(--navy);">Lựa chọn D</strong>
+                        </div>
+                        <input type="text" id="optionDInput" class="form-control-custom" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Correct Answer Selection -->
+            <div class="form-group" style="margin-top: 24px;">
+                <label class="form-label">Đáp án đúng (Chọn duy nhất 1 đáp án đúng)</label>
+                <div class="ans-selector">
+                    <button type="button" class="ans-btn" id="ansBtnA" onclick="setCorrectAns('A')">A</button>
+                    <button type="button" class="ans-btn" id="ansBtnB" onclick="setCorrectAns('B')">B</button>
+                    <button type="button" class="ans-btn" id="ansBtnC" onclick="setCorrectAns('C')">C</button>
+                    <button type="button" class="ans-btn" id="ansBtnD" onclick="setCorrectAns('D')">D</button>
+                </div>
+                <input type="hidden" id="selectedCorrectAns" value="A" />
+            </div>
+
+            <div style="border-top: 1px solid var(--border); padding-top: 20px; margin-top: 24px; display: flex; justify-content: flex-end;">
+                <button type="button" class="btn-save-edit" onclick="saveCurrentQuestion()">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    Lưu thay đổi
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="toast-msg">Đã lưu thay đổi thành công!</div>
+
+<script>
+    var questionsData = @Html.Raw(JsonSerializer.Serialize(allQuestions));
+    var passagesData = @Html.Raw(JsonSerializer.Serialize(passageMap));
+
+    var currentQNumber = 101;
+
+    function selectQuestion(qNum) {
+        currentQNumber = qNum;
+
+        // Update active class in sidebar
+        document.querySelectorAll('.tree-item').forEach(function(el) {
+            el.classList.remove('active');
+        });
+        var activeEl = document.getElementById('nav-q-' + qNum);
+        if (activeEl) activeEl.classList.add('active');
+
+        var q = questionsData.find(function(item) { return item.QuestionNumber === qNum; });
+        if (!q) return;
+
+        document.getElementById('currentQId').value = q.Id;
+        document.getElementById('currentQNum').value = q.QuestionNumber;
+        document.getElementById('editingHeader').innerText = 'Chỉnh sửa Câu ' + q.QuestionNumber;
+
+        var part = q.QuestionNumber <= 130 ? 'Part 5 · Incomplete Sentences' :
+                   (q.QuestionNumber <= 146 ? 'Part 6 · Text Completion' : 'Part 7 · Reading Comprehension');
+        document.getElementById('partBadge').innerText = part;
+
+        // Passage section
+        var passInfo = passagesData[qNum];
+        var passSection = document.getElementById('passageEditorSection');
+        if (passInfo && passInfo.Item1 !== null) {
+            passSection.style.display = 'block';
+            document.getElementById('currentPassageGroupId').value = passInfo.Item1;
+            document.getElementById('passageTitleInput').value = passInfo.Item2 || 'Tài liệu đoạn đọc';
+            document.getElementById('passageTextInput').value = passInfo.Item3 || '';
+        } else {
+            passSection.style.display = 'none';
+            document.getElementById('currentPassageGroupId').value = '';
+        }
+
+        // Stem
+        document.getElementById('questionTextInput').value = q.QuestionText || '';
+
+        // Options
+        var optA = q.Options.find(function(o) { return o.Label === 'A'; });
+        var optB = q.Options.find(function(o) { return o.Label === 'B'; });
+        var optC = q.Options.find(function(o) { return o.Label === 'C'; });
+        var optD = q.Options.find(function(o) { return o.Label === 'D'; });
+
+        document.getElementById('optionAInput').value = optA ? optA.Text : '';
+        document.getElementById('optionBInput').value = optB ? optB.Text : '';
+        document.getElementById('optionCInput').value = optC ? optC.Text : '';
+        document.getElementById('optionDInput').value = optD ? optD.Text : '';
+
+        // Correct answer
+        setCorrectAns(q.CorrectAnswer || 'A');
+    }
+
+    function setCorrectAns(ans) {
+        document.getElementById('selectedCorrectAns').value = ans;
+        ['A', 'B', 'C', 'D'].forEach(function(letter) {
+            var btn = document.getElementById('ansBtn' + letter);
+            if (btn) {
+                if (letter === ans) btn.classList.add('active');
+                else btn.classList.remove('active');
+            }
+        });
+    }
+
+    function saveCurrentQuestion() {
+        var payload = {
+            QuestionId: parseInt(document.getElementById('currentQId').value),
+            QuestionText: document.getElementById('questionTextInput').value,
+            OptionA: document.getElementById('optionAInput').value,
+            OptionB: document.getElementById('optionBInput').value,
+            OptionC: document.getElementById('optionCInput').value,
+            OptionD: document.getElementById('optionDInput').value,
+            CorrectAnswer: document.getElementById('selectedCorrectAns').value,
+            PassageText: document.getElementById('passageTextInput').value,
+            PassageGroupId: document.getElementById('currentPassageGroupId').value ? parseInt(document.getElementById('currentPassageGroupId').value) : null
+        };
+
+        fetch('@Url.Action("UpdateQuestion", "ToeicAdmin")', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(function(res) {
+            return res.text().then(function(text) {
+                try {
+                    return text ? JSON.parse(text) : {};
+                } catch(e) {
+                    throw new Error('Mã phản hồi HTTP ' + res.status + ': ' + text);
+                }
+            });
+        })
+        .then(function(data) {
+            var isSuccess = data.success === true || (data.result && data.result.success === true);
+            if (isSuccess) {
+                showToast('Đã lưu câu ' + currentQNumber + ' thành công!');
+                // Update local memory
+                var q = questionsData.find(function(item) { return item.QuestionNumber === currentQNumber; });
+                if (q) {
+                    q.QuestionText = payload.QuestionText;
+                    q.CorrectAnswer = payload.CorrectAnswer;
+                    var oA = q.Options.find(function(o) { return o.Label === 'A'; }); if (oA) oA.Text = payload.OptionA;
+                    var oB = q.Options.find(function(o) { return o.Label === 'B'; }); if (oB) oB.Text = payload.OptionB;
+                    var oC = q.Options.find(function(o) { return o.Label === 'C'; }); if (oC) oC.Text = payload.OptionC;
+                    var oD = q.Options.find(function(o) { return o.Label === 'D'; }); if (oD) oD.Text = payload.OptionD;
+                }
+            } else {
+                var errMsg = data.message || (data.error && data.error.message) || 'Không thể lưu câu hỏi';
+                alert('Lỗi: ' + errMsg);
+            }
+        })
+        .catch(function(err) {
+            alert('Lỗi kết nối: ' + err.message);
+        });
+    }
+
+    function showToast(msg) {
+        var toast = document.getElementById('toast');
+        toast.innerText = msg;
+        toast.style.display = 'block';
+        setTimeout(function() {
+            toast.style.display = 'none';
+        }, 3000);
+    }
+
+    // Initialize with question 101
+    document.addEventListener('DOMContentLoaded', function() {
+        selectQuestion(@(ViewBag.ActiveQuestionNumber ?? 101));
+    });
+</script>
